@@ -1,0 +1,8 @@
+INDEX VERSION 1.4+C:\koheejae_news\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
+924216551.index
+137324952.index
+834082836.index
+286733431.index
+1064917795.index
+17661579.index
+1894516353.index

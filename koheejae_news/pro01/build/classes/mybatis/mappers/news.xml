@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper	namespace="mapper.news">
+	<resultMap id="newsResult" type="newsVO">
+		<result property="newsNO" column="newsNO" />
+		<result property="newsName" column="newsName" />
+		<result property="newsContent" column="newsContent" />
+		<result property="imageFileName" column="imageFileName" />
+		<result property="writeDate" column="writeDate" />
+	</resultMap>
+	
+	<sql id="a">
+		<![CDATA[ select * from t_news ]]>
+	</sql>
+	
+	<select id="selectAllNewsList" resultMap="newsResult">
+		<![CDATA[
+		select * from t_news order by writeDate desc
+		]]>
+	</select>
+	
+	<select id="selectNewsByNewsNO" resultType="newsVO" parameterType="int">
+		<![CDATA[ select * from t_news where newsNO=#{newsNO} ]]>
+	</select>
+	
+
+	<insert id="insertNews" parameterType="newsVO">
+	<![CDATA[ insert into t_news(newsNO,newsName,newsContent,imageFileName) values(#{newsNO},#{newsName},#{newsContent},#{imageFileName}) ]]>
+	</insert>
+	
+	<insert id="insertNews2" parameterType="java.util.Map">
+	<![CDATA[ insert into t_news(newsNO,newsName,newsContent,imageFileName) values(#{newsNO},#{newsName},#{newsContent},#{imageFileName}) ]]>
+	</insert>
+	
+	<update id="updateNews" parameterType="NewsVO">
+	<![CDATA[ update t_news set newsName=#{newsName}, newsContent=#{newsContent}, imageFileName=#{imageFileName} where newsNO=#{newsNO} ]]>
+	</update>
+	
+	<delete id="deleteNews" parameterType="int">
+	<![CDATA[ delete from t_news where newsNO=#{newsNO} ]]>
+	</delete>
+	
+	
+	<select id="selectLikeName" resultMap="newsResult" parameterType="String">
+		<include refid="a" />
+			<![CDATA[ where newsName like concat('%',#{newsName},'%') ]]>
+	</select>
+	
+	<select id="selectLikeContent" resultMap="newsResult" parameterType="String">
+		<include refid="a" />
+			<![CDATA[ where newsContent like concat('%',#{newsContent},'%') ]]>
+	</select>
+	
+</mapper>

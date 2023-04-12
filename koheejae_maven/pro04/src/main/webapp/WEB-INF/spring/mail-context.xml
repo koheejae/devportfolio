@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+  
+  <!-- 메일을 보냈을때 실제 수신자에게 메일을 보내는 host 서버에 네이버 SMTP 서버를 설정 -->
+  <property name="host" value="smtp.naver.com" />
+  
+  <!-- 네이버 SMTP 메일 서버의 포트 -->
+  <property name="port" value="587" />
+  
+  <!-- 자신의 메일계정과 비밀번호 설정 -->
+  <property name="username" value="refailer@naver.com" />
+  <property name="password" value="tkflrhaxod2" />
+  
+  <!-- 메일전달 프로토콜 세부속성을 설정합니다. -->
+  <property name="javaMailProperties">
+    <props>
+       <prop key="mail.transport.protocol">smtp</prop>
+       <prop key="mail.smtp.auth">true</prop>
+       <prop key="mail.smtp.starttls.enable">true</prop>
+       <prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+       <prop key="mail.debug">true</prop>
+    </props>
+  </property>
+</bean>
+
+ 
+<!-- You can have some pre-configured messagess also which are ready to send -->
+	<!-- 수신자에게 메일을 정기적으로 보내는 경우 송수신 메일 주소와 제목을 미리 지정해서 보낼 수 있습니다. -->
+	<bean id="preConfiguredMessage" class="org.springframework.mail.SimpleMailMessage">
+   <!-- 수신메일주소 -->
+   <property name="to" value="refailer@naver.com"></property> 
+   
+   <property name="from" value="refailer@naver.com"></property>
+   <property name="subject" value="테스트 메일입니다."/>
+	</bean>
+</beans>	

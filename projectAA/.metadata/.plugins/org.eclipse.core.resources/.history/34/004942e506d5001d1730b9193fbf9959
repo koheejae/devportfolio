@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.mypage">
+<!-- 리절트 맵 정의 -->
+	<resultMap id="orderGoodsResult" type="orderVO">
+		<result property="order_num" column="order_num" />
+		<result property="id" column="id" />
+		<result property="goods_num" column="goods_num" />
+		<result property="goods_title" column="goods_title" />
+		<result property="order_price" column="order_price" />
+		<result property="order_goods_qty" column="order_goods_qty" />
+		
+		<result property="orderer_name" column="orderer_name" />
+		<result property="receiver_name" column="receiver_name" />
+		<result property="receiver_hp1" column="receiver_hp1" />
+		<result property="receiver_hp2" column="receiver_hp2" />
+		<result property="receiver_hp3" column="receiver_hp3" />
+		
+		<result property="receiver_tel1" column="receiver_tel1" />
+		<result property="receiver_tel2" column="receiver_tel2" />
+		<result property="receiver_tel3" column="receiver_tel3" />
+		<result property="delivery_address" column="delivery_address" />
+		<result property="delivery_message" column="delivery_message" />
+		
+		<result property="delivery_method" column="delivery_method" />
+		<result property="gift_wrapping" column="gift_wrapping" />
+		<result property="pay_method" column="pay_method" />
+		<result property="card_com_name" column="card_com_name" />
+		<result property="card_pay_month" column="card_pay_month" />
+		
+		<result property="pay_orderer_hp_num" column="pay_orderer_hp_num" />
+		<result property="pay_order_time" column="pay_order_time" />
+		<result property="delivery_state" column="delivery_state" />
+		<result property="final_total_price" column="final_total_price" />
+		<result property="goods_qty" column="goods_qty" />
+		
+		<result property="goods_fileName" column="goods_fileName" />
+	</resultMap> 
+<resultMap id="goodsResult" type="goodsVO">
+		<result property="goods_num" column="goods_num" />
+		<result property="id" column="id" />
+		<result property="goods_title" column="goods_title" />
+		<result property="goods_content" column="goods_content" />
+		<result property="goods_point" column="goods_point" />
+		<result property="goods_image" column="goods_image" />
+		
+		<result property="goods_status" column="goods_status" />
+		<result property="goods_standardPrice" column="goods_standardPrice" />
+		<result property="goods_deluxePrice" column="goods_deluxePrice" />
+		<result property="goods_premiumPrice" column="goods_premiumPrice" />
+		<result property="goods_credate" column="goods_credate" />
+		<result property="goods_grade" column="goods_grade" />
+		<result property="goods_modify" column="goods_modify" />
+		
+		<result property="goods_fileName" column="fileName" />
+		<result property="goods_main_category" column="goods_main_category" />
+		<result property="goods_middle_category" column="goods_middle_category" />
+		<result property="goods_sub_category" column="goods_sub_category" />
+		<result property="goods_standardContent" column="goods_standardContent" />
+		<result property="goods_deluxeContent" column="goods_deluxeContent" />
+		<result property="goods_premiumContent" column="goods_premiumContent" />
+		<result property="totalSell" column="totalSell" />
+	</resultMap>
+	<resultMap id="cartResult" type="CartVO">
+		<result property="cart_num" column="cart_num" />
+		<result property="goods_num" column="goods_num" />
+		<result property="id" column="id" />
+		<result property="goods_option" column="goods_option" />
+		<result property="cart_goods_qty" column="cart_goods_qty" />
+		<result property="creDate" column="creDate" />
+	</resultMap>
+		<resultMap id="imageResult" type="ImageFileVO">
+	   <result property="goods_num" column="goods_num" />
+	   <result property="fileName" column="fileName" />
+	   <result property="reg_id" column="reg_id" />
+	   <result property="image_id" column="image_id" />
+	   <result property="fileType" column="fileType" />
+	</resultMap>
+	
+	
+	 <select id="selectMyOrderGoodsList" resultMap="orderGoodsResult"  parameterType="String"  >
+	    <![CDATA[
+			select * from t_shopping_order
+            where member_id=#{member_id}
+            order by pay_order_time desc
+		]]>
+	</select>
+	
+
+	<select id="selectMyOrderInfo" resultMap="orderGoodsResult"   parameterType="String"  >
+	    <![CDATA[
+		    select * from t_shopping_order
+            where order_id=#{order_id}
+    	]]>
+	</select>
+		<select id="selectMyOrderHistoryList" resultMap="orderGoodsResult"   parameterType="java.util.Map"  >
+          <!-- and  to_char(pay_order_time,'yyyy-mm-dd') limit #{beginDate}, #{endDate} -->
+          <!-- and DATE_FORMAT(pay_order_time, '%Y%m%d%H%i%s') limit #{beginDate}, #{endDate} -->
+	    <![CDATA[
+		  select * from t_shopping_order
+          where member_id=#{member_id}
+          and DATE_FORMAT(pay_order_time, '%Y%m%d%H%i%s')
+          order by pay_order_time desc
+    	]]>
+	</select>	
+	
+	<update id="updateMyInfo" parameterType="java.util.HashMap">
+	   update member
+			   <set>
+			      <if test=" pwd!='' and pwd!=null">
+			        pwd=#{pwd},
+			      </if>
+			      <if test=" tel!='' and tel!=null">
+			         tel=#{tel},
+			      </if>
+			       <if test=" nickname!='' and nickname!=null">
+			         nickname=#{nickname},
+			      </if>
+			      <if test=" smssts_yn!='' and smssts_yn!=null">
+			         smssts_yn=#{smssts_yn},
+			      </if>
+			      <if test=" email!='' and email!=null">
+			         email=#{email},
+			      </if>
+			      <if test=" emailsts_yn!='' and emailsts_yn!=null">
+			         emailsts_yn=#{emailsts_yn},
+			      </if>
+			      <if test=" zipcode!='' and zipcode!=null">
+			         zipcode=#{zipcode},
+			      </if>
+			      <if test=" roadAdd!='' and roadAdd!=null">
+			         roadAdd=#{roadAdd},
+			      </if>			     
+			      <if test=" jibunAdd!='' and jibunAdd!=null">
+			         jibunAdd=#{jibunAdd},
+			      </if>
+			      <if test=" namujiAdd!='' and namujiAdd!=null">
+			         namujiAdd=#{namujiAdd}
+			      </if>
+			   </set>
+		where 
+		id=#{id}
+	</update>
+	<update id="updateComInfo" parameterType="java.util.HashMap">
+	   update company
+			   <set>
+			      <if test=" pwd!='' and pwd!=null">
+			        pwd=#{pwd},
+			      </if> 
+			        <if test=" company_name!='' and company_name!=null">
+			         company_name=#{company_name},
+			      </if>
+			      <if test=" company_phone!='' and company_phone!=null">
+			         company_phone=#{company_phone},
+			      </if>
+			       <if test=" nickname!='' and nickname!=null">
+			         nickname=#{nickname},
+			      </if>
+			      <if test=" smssts_yn!='' and smssts_yn!=null">
+			         smssts_yn=#{smssts_yn},
+			      </if>
+			      <if test=" email!='' and email!=null">
+			         email=#{email},
+			      </if>
+			      <if test=" emailsts_yn!='' and emailsts_yn!=null">
+			         emailsts_yn=#{emailsts_yn},
+			      </if>
+			      <if test=" company_zipcode!='' and company_zipcode!=null">
+			         company_zipcode=#{company_zipcode},
+			      </if>
+			      <if test=" company_roadAdd!='' and company_roadAdd!=null">
+			         company_roadAdd=#{company_roadAdd},
+			      </if>			     
+			      <if test=" company_jibunAdd!='' and company_jibunAdd!=null">
+			         company_jibunAdd=#{company_jibunAdd},
+			      </if>
+			      <if test=" company_namujiAdd!='' and company_namujiAdd!=null">
+			         company_namujiAdd=#{company_namujiAdd}
+			      </if>
+			   </set>
+		where 
+		id=#{id}
+	</update>
+	
+	<select id="selectMyDetailInfo" resultType="memberVO"   parameterType="String"  >
+	    <![CDATA[
+			select * from member
+			where id=#{id}
+    	]]>
+	</select>	
+		<select id="selectComDetailInfo" resultType="companyVO"   parameterType="String"  >
+	    <![CDATA[
+			select * from company
+			where id=#{id}
+    	]]>
+	</select>	
+	
+	
+	<update id="updateMyOrderCancel" parameterType="String">
+	   update t_shopping_order
+	 	  set delivery_state='cancel_order'
+	   where order_id=#{order_id}
+	</update>
+	
+	<delete id = "removeMyInfo" parameterType="String">
+		<![CDATA[
+	      delete from t_shopping_member
+	      where member_id = #{member_id}
+	   ]]>
+	</delete>
+		
+		<delete id = "deleteMember" parameterType="String">
+		<![CDATA[
+	      delete from member
+	      where id = #{id}
+	   ]]>
+	</delete>
+	
+<select id="myOrderCheck" parameterType="orderVO" resultMap="orderGoodsResult">
+
+<![CDATA[
+		select *
+		from goods_order
+		where id=#{id}
+		order by order_date
+		]]>
+</select>
+
+
+<select id="myGoodsOrderCheck" parameterType="java.util.Map" resultMap="goodsResult">
+
+<![CDATA[
+          select g.order_num,g.order_goods_option,g.order_goods_qty,g.order_price,d.fileName 
+          from goods_order g, goods_image d
+          where g.goods_num=d.goods_num 
+          and d.fileType='main_image'
+            
+      ]]>
+</select>
+</mapper>
