@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.order">
+<!-- 리절트 맵 정의 -->	
+	<resultMap id="orderGoodsResult" type="OrderVO">
+	    <result property="order_num" column="order_num" />
+		<result property="id" column="id" />
+		<result property="goods_num" column="goods_num" />
+		<result property="goods_title" column="goods_title" />
+		<result property="goods_resultPrice" column="goods_resultprice" />
+		<result property="order_total_price" column="order_total_price" />
+		<result property="order_goods_qty" column="order_goods_qty" />
+		
+		<result property="orderer_name" column="orderer_name" />
+		
+		
+		<result property="pay_method" column="pay_method" />
+		<result property="card_com_name" column="card_com_name" />
+		<result property="card_pay_month" column="card_pay_month" />
+		
+		<result property="pay_order_time" column="pay_order_time" />
+		<result property="final_total_price" column="final_total_price" />
+		<result property="goods_qty" column="goods_qty" />
+		<result property="orderer_tel" column="orderer_tel" />
+		<result property="goods_fileName" column="goods_fileName" />
+	</resultMap>
+	<resultMap id="companyResult" type="CompanyVO">
+		<result property="id" column="id" />
+		<result property="pwd" column="pwd" />
+		<result property="company_name" column="company_name" />
+		<result property="gender" column="gender" />
+		<result property="company_Number" column="company_Number" />
+		<result property="company_phone" column="company_phone" />
+		<result property="company_tel" column="company_tel" />
+		<result property="smssts_yn" column="smssts_yn" />
+		<result property="email" column="email" />
+		<result property="emailsts_yn" column="emailsts_yn" />
+		
+		<result property="company_zipcode" column="company_zipcode" />
+		<result property="company_roadAdd" column="company_roadAdd" />
+		<result property="company_jibunAdd" column="company_jibunAdd" />
+		<result property="company_namujiAdd" column="company_namujiAdd" />
+		<result property="joinDate" column="joinDate" />
+		
+		<result property="company_intro" column="company_intro" />
+		<result property="company_grade" column="company_grade" />
+		<result property="company_totalprice" column="company_totalprice" />
+		<result property="status" column="status" />
+		<result property="nickname" column="nickname" />
+		<result property="capName" column="capName" />
+		<result property="totalWork" column="totalWork" />
+		<result property="del_yn" column="del_yn" />
+		
+	</resultMap>
+	<resultMap id="goodsResult" type="goodsVO">
+		<result property="goods_num" column="goods_num" />
+		<result property="id" column="id" />
+		<result property="goods_title" column="goods_title" />
+		<result property="goods_content" column="goods_content" />
+		<result property="goods_point" column="goods_point" />
+		<result property="goods_image" column="goods_image" />
+		
+		<result property="goods_status" column="goods_status" />
+		<result property="goods_standardPrice" column="goods_standardPrice" />
+		<result property="goods_deluxePrice" column="goods_deluxePrice" />
+		<result property="goods_premiumPrice" column="goods_premiumPrice" />
+		<result property="goods_credate" column="goods_credate" />
+		<result property="goods_grade" column="goods_grade" />
+		<result property="goods_modify" column="goods_modify" />
+		
+		<result property="goods_fileName" column="fileName" />
+		<result property="goods_main_category" column="goods_main_category" />
+		<result property="goods_middle_category" column="goods_middle_category" />
+		<result property="goods_sub_category" column="goods_sub_category" />
+		<result property="goods_standardContent" column="goods_standardContent" />
+		<result property="goods_deluxeContent" column="goods_deluxeContent" />
+		<result property="goods_premiumContent" column="goods_premiumContent" />
+		<result property="totalSell" column="totalSell" />
+	</resultMap>	
+	<resultMap id="imageResult" type="ImageFileVO">
+	   <result property="goods_num" column="goods_num" />
+	   <result property="fileName" column="fileName" />
+	   <result property="reg_id" column="reg_id" />
+	   <result property="image_id" column="image_id" />
+	   <result property="fileType" column="fileType" />
+	</resultMap>
+	
+	
+	<select id="selectGoodsByOrder" resultMap="goodsResult"   parameterType="java.util.Map"  >
+	    <![CDATA[
+		     select DISTINCT goods.*, goods_image.fileName from goods , goods_image
+			where goods.goods_num=goods_image.goods_num
+			and goods_image.filetype='main_image'
+			and goods.goods_num in
+    	]]>
+    	<foreach item="item" collection="list" open="(" separator="," close=")">
+			#{item.goods_num} 
+		</foreach>
+		order by goods_num
+	</select>
+	
+	<select id="selectCompanyByGoods" resultMap="companyResult"   parameterType="String"  >
+	    <![CDATA[
+		     select company.* from company
+			where company.id = #{id} 
+		order by id
+		]]>
+	</select>
+	
+	
+	
+	 <select id="selectMyOrderList" resultMap="orderGoodsResult"  parameterType="orderVO"  >
+	    <![CDATA[
+			select * from goods_order
+			where DATE_FORMAT(pay_order_time,'%Y%m%d%H%i%s')=DATE_FORMAT(sysdate,'%Y%m%d%H%i%s') 
+        	and id=#{id}
+        	order by pay_order_time desc
+		]]>
+	</select>
+	<insert id="insertNewOrder" parameterType="orderVO"  >
+	    	
+	    <![CDATA[
+			insert into goods_order(order_num,
+										id,
+									    goods_num,
+									    goods_title,
+									    goods_fileName,
+									    order_goods_qty,
+									    order_price,
+									    orderer_name,
+									    order_goods_option,
+									    company_name,
+						                pay_method,
+						                card_com_name,
+						                card_pay_month)
+							     values(#{order_num},
+									    #{id},
+									    #{goods_num},
+									    #{goods_title},
+									    #{goods_fileName},
+									    #{order_goods_qty},
+									    #{order_price},
+									    #{orderer_name},
+									    #{order_goods_option},
+									    #{company_name},
+						                #{pay_method},
+						                #{card_com_name},
+						                #{card_pay_month})
+    	]]>
+	</insert>
+
+   <select id="selectOrderNum" resultType="int"  >
+		    <!-- select seq_order_id.nextval from dual -->
+	    <![CDATA[
+		    select ifnull(max(order_num), 0) + 1 from goods_order 
+    	]]>
+	</select>
+	
+	<select id="selectMyOrder" resultMap="orderGoodsResult"   parameterType="String"  >
+	    <![CDATA[
+		    select * from t_shopping_order
+            where DATE_FORMAT(pay_order_time,'%Y%m%d%H%i%s')=DATE_FORMAT(sysdate,'%Y%m%d%H%i%s') 
+            and order_id=#{order_id}
+            order by pay_order_time desc
+    	]]>
+	</select>
+	
+	<select id="selectGoodsByNum" resultMap="goodsResult">
+  <![CDATA[
+    SELECT * FROM goods
+    WHERE goods_num = #{goods_num}
+  ]]>
+</select>
+	
+	
+	
+	<delete id="deleteGoodsFromCart" parameterType="orderVO">
+	  delete from goods_cart
+	  where goods_num=#{goods_num}
+	</delete>
+	
+</mapper>

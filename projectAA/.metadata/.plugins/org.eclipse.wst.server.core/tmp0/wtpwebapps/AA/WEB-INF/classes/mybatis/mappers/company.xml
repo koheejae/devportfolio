@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="mapper.company">
+	<!-- 리절트 맵 정의 -->	
+	<resultMap id="goodsResult" type="goodsVO">
+		<result property="goods_num" column="goods_num" />
+		<result property="id" column="id" />
+		<result property="goods_title" column="goods_title" />
+		<result property="goods_content" column="goods_content" />
+		<result property="goods_point" column="goods_point" />
+		<result property="goods_intro" column="goods_intro" />
+		
+		<result property="goods_status" column="goods_status" />
+		<result property="goods_standardPrice" column="goods_standardPrice" />
+		<result property="goods_deluxePrice" column="goods_deluxePrice" />
+		<result property="goods_premiumPrice" column="goods_premiumPrice" />
+		<result property="goods_credate" column="goods_credate" />
+		<result property="goods_grade" column="goods_grade" />
+		<result property="goods_modify" column="goods_modify" />
+		
+		<result property="goods_fileName" column="fileName" />
+		<result property="goods_main_category" column="goods_main_category" />
+		<result property="goods_middle_category" column="goods_middle_category" />
+		<result property="goods_sub_category" column="goods_sub_category" />
+		<result property="goods_standardContent" column="goods_standardContent" />
+		<result property="goods_deluxeContent" column="goods_deluxeContent" />
+		<result property="goods_premiumContent" column="goods_premiumContent" />
+		<result property="totalSell" column="totalSell" />
+		<result property="goods_prime_yn" column="goods_prime_yn" />
+	</resultMap>		
+
+	<resultMap id="imageResult" type="ImageFileVO">
+	   <result property="goods_num" column="goods_num" />
+	   <result property="fileName" column="fileName" />
+	   <result property="reg_id" column="reg_id" />
+	   <result property="image_id" column="image_id" />
+	   <result property="fileType" column="fileType" />
+	   <result property="creDate" column="creDate" />
+	</resultMap>
+	
+	
+	<insert id="insertNewGoods" parameterType="java.util.Map"   >
+	    <![CDATA[
+		   insert into goods(
+		                goods_num,
+		                id, 
+	                    goods_title,
+	                    goods_content,
+	                    goods_point,
+						goods_intro,
+						goods_status,
+						goods_standardPrice,
+						goods_deluxePrice,
+						goods_premiumPrice,
+						goods_credate,
+						goods_grade,
+						goods_modify,
+						goods_main_category,
+						goods_middle_category,
+						goods_sub_category,
+						goods_standardContent,
+			            goods_deluxeContent,
+			            goods_premiumContent,
+			            totalSell,
+			            goods_prime_yn
+			            )
+	  			values(
+	  			      #{goods_num},
+	  			      #{id},
+	  			      #{goods_title},
+	  			      #{goods_content},
+	  			      #{goods_point },
+	  			      #{goods_intro},
+	  			      #{goods_status},
+	  			      #{goods_standardPrice},
+	  			      #{goods_deluxePrice},
+	  			      #{goods_premiumPrice},
+	  			      #{goods_credate },
+	  			      #{goods_grade },
+	  			      #{goods_modify },
+	  			      #{goods_main_category},
+					  #{goods_middle_category},
+	  			      #{goods_sub_category },
+	  			      #{goods_standardContent },	
+	  			      #{goods_deluxeContent},
+	  			      #{goods_premiumContent},
+	  			      #{totalSell},
+	  			      #{goods_prime_yn}
+					 			 )
+		]]>
+	</insert> 
+	<insert id="insertGoodsImageFile" parameterType="imageFileVO">
+	  	<!-- 새 상품일 경우 첨부한 상품이미지 정보를 저장합니다. -->
+	    <![CDATA[
+		   insert into goods_image (image_id,
+		                                     goods_num,
+											 fileName,
+											 fileType,
+											 reg_id,
+											 creDate)
+		   					values(#{image_id},
+		   					 			 #{goods_num},
+		   							 	 #{fileName},
+		   								 #{fileType},
+		   								 #{reg_id},
+		   								 #{creDate} )
+		]]>
+	</insert>
+	<select id="selectMaxGoodsNum" resultType="int">
+       <![CDATA[
+         SELECT COALESCE(MAX(goods_num), 0) + 1 FROM goods;
+       ]]>
+   </select>
+   
+   <select id="selectMaxImageId" resultType="int">
+       <![CDATA[
+         SELECT COALESCE(MAX(image_id), 0) + 1 FROM goods_image;
+       ]]>
+   </select>
+   
+</mapper>

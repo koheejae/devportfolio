@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.board">
+<resultMap id="articlesResult" type="articleVO">
+    <result property="level" column="level" />
+    <result property="board_num" column="board_num" />
+    <result property="board_title" column="board_title" />
+    <result property="board_content" column="board_content" />
+    <result property="writeDate" column="writeDate" />
+    <result property="imageFileName" column="imageFileName" />
+       <result property="status" column="status" />
+  </resultMap> 
+  
+  <resultMap id="imgResult" type="imageVO">
+	  <result property="imageFileNO" column="imageFileNO" />
+	  <result property="board_num" column="board_num" />
+	  <result property="imageFileName" column="imageFileName" />
+ </resultMap>
+
+  <select id="selectAllArticlesList" resultMap="articlesResult"   >
+    <![CDATA[
+SELECT 
+    CASE 
+        WHEN (SELECT COUNT(*) FROM board t2 WHERE t2.board_num > t1.board_num IS NULL) > 0 
+        THEN CONCAT(REPEAT('  ', (SELECT COUNT(*) FROM board t2 WHERE t2.board_num > t1.board_num IS NULL) - 1), '|--') 
+        ELSE ''
+    END AS board_title_alias,
+    t1.board_num, t1.board_title, t1.board_content, t1.id, t1.writeDate, t1.viewCnt, t1.status
+FROM board t1
+ORDER BY t1.board_num DESC;
+    ]]>
+  </select>
+  
+	<!--단일이미지 추가  -->
+	 
+  <insert id="insertNewArticle"  parameterType="java.util.Map">
+		<![CDATA[
+			INSERT into board(board_num,  board_title, board_content, imageFileName, id, viewCnt,status)
+			VALUES(#{board_num},#{board_title},	#{board_content}, #{imageFileName},	#{id} ,#{viewCnt} , #{status})
+		]]>      
+	</insert>
+	
+  <select id="selectNewArticleNO" resultType="int"  >
+		<![CDATA[
+			SELECT  nvl(max(board_num), 0) + 1 from board		
+		]]>
+	</select>
+	
+  <select id="selectArticle" resultType="articleVO"   parameterType="int">
+    <![CDATA[
+      SELECT * from board
+      where board_num = #{board_num}		
+    ]]>
+  </select>
+<update id="updateView" parameterType="java.util.Map">
+  UPDATE board SET viewCnt = viewCnt + 1
+  WHERE board_num = #{board_num}
+</update>
+  <update id="updateArticle"  parameterType="java.util.Map">
+			update board
+			set board_title=#{board_title},	 
+			board_content=#{board_content}
+			 <if test="imageFileName!='' and imageFileName!=null">
+			  , imageFileName=#{imageFileName}
+			</if>
+			where board_num=#{board_num}
+	</update>
+	
+	<delete id="deleteArticle"  parameterType="int">
+    <![CDATA[
+      delete from board
+      where board_num in (
+         SELECT board_num FROM  board
+         START WITH board_num = #{board_num}
+         CONNECT BY PRIOR  board_num )
+    ]]>      
+  </delete>
+  
+
+ <!--다중 이미지 추가 SQL문 -->   
+  <!--
+    <insert id="insertNewArticle"  parameterType="java.util.Map">
+    <![CDATA[
+      insert into board(board_num, id, board_title, board_content, imageFileName)
+      values(#{board_num}, #{id}, #{board_title}, #{board_content}, null)
+    ]]>      
+  </insert>
+
+ 
+   <insert id="insertNewImage"  parameterType="java.util.Map">
+    <foreach item="item"  collection="list"   open="INSERT ALL" 
+                  separator=" " close="SELECT * FROM DUAL" >
+      INTO t_imageFile(imageFileNO, imageFileName, board_num, regDate)
+      VALUES (#{item.imageFileNO}, #{item.imageFileName}, #{item.board_num}, sysdate)
+    </foreach>
+  </insert>
+ -->
+ 
+  <select id="selectNewImageFileNO" resultType="int"  >
+    <![CDATA[
+      SELECT  nvl(max(imageFileNO),0) from imageFile		
+    ]]>
+  </select>
+	
+
+  <select  id="selectImageFileList" resultMap="imgResult" parameterType="int">
+    <![CDATA[
+      SELECT * from imageFile
+      where board_num=#{board_num}	
+    ]]>
+  </select> 
+  
+</mapper>

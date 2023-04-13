@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+<tiles-definitions>
+	  <definition name="/member/loginForm" extends="mainLayout">
+         <put-attribute name="title" value="로그인 페이지" />
+         <put-attribute name="body" value="/WEB-INF/views/member/loginForm.jsp" />
+      </definition>
+      
+      <definition name="/member/idForm" extends="mainLayout">
+         <put-attribute name="title" value="아이디 찾기 페이지" />
+         <put-attribute name="body" value="/WEB-INF/views/member/idForm.jsp" />
+      </definition>
+      
+      <definition name="/member/pwForm" extends="mainLayout">
+         <put-attribute name="title" value="비밀번호 찾기 페이지" />
+         <put-attribute name="body" value="/WEB-INF/views/member/pwForm.jsp" />
+      </definition>
+      
+
+      
+      <definition name="/member/selectJoinMember" extends="mainLayout">
+         <put-attribute name="title" value="회원 선택 페이지" />
+         <put-attribute name="body" value="/WEB-INF/views/member/selectJoinMember.jsp" />
+      </definition>
+      
+      <definition name="/member/joinAgree" extends="mainLayout">
+         <put-attribute name="title" value="약관 동의 페이지" />
+         <put-attribute name="body" value="/WEB-INF/views/member/joinAgree.jsp" />
+      </definition>
+      
+      <definition name="/member/memberForm" extends="mainLayout">
+         <put-attribute name="title" value="개인 정보 입력 페이지" />
+         <put-attribute name="body" value="/WEB-INF/views/member/memberForm.jsp" />
+      </definition>
+      
+      <definition name="/member/companyForm" extends="mainLayout">
+         <put-attribute name="title" value="사업자 정보 입력 페이지" />
+         <put-attribute name="body" value="/WEB-INF/views/member/companyForm.jsp" />
+      </definition>
+  
+</tiles-definitions>
+
+

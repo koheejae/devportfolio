@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+<tiles-definitions>
+    <definition name="/mypage/myPageMain" extends="baseLayout">
+       <put-attribute name="title" value="마이페이지 메인" />
+       <put-attribute name="body" value="/WEB-INF/views/mypage/myPageMain.jsp" />
+    </definition>
+    <definition name="/mypage/myOrderDetail" extends="baseLayout">
+       <put-attribute name="title" value="내 주문 상세 페이지" />
+       <put-attribute name="body" value="/WEB-INF/views/mypage/myOrderDetail.jsp" />
+     </definition>
+      <definition name="/mypage/listMyOrderHistory" extends="baseLayout">
+       <put-attribute name="title" value="내 주문 상세 페이지" />
+       <put-attribute name="body" value="/WEB-INF/views/mypage/listMyOrderHistory.jsp" />
+     </definition>
+     <definition name="/mypage/myDetailInfo" extends="baseLayout">
+       <put-attribute name="title" value="내 정보 관리 페이지" />
+       <put-attribute name="body" value="/WEB-INF/views/mypage/myDetailInfo.jsp" />
+     </definition>
+     <definition name="/mypage/comDetailInfo" extends="baseLayout">
+       <put-attribute name="title" value="사업자 정보 관리 페이지" />
+       <put-attribute name="body" value="/WEB-INF/views/mypage/comDetailInfo.jsp" />
+     </definition>
+     <definition name="/mypage/myOrderCheck" extends="baseLayout">
+       <put-attribute name="title" value="주문 조회 페이지" />
+       <put-attribute name="body" value="/WEB-INF/views/mypage/myOrderCheck.jsp" />
+     </definition>
+    <definition extends="baseLayout" name="/mypage/comGoodsInfo">
+      <put-attribute name="title" value="사업자 등록 상품 조회"/> 
+      <put-attribute name="body" value="/WEB-INF/views/mypage/comGoodsInfo.jsp"/>
+</definition>
+    
+</tiles-definitions>
+
+

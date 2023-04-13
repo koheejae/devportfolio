@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.goods">
+
+	<resultMap id="goodsResult" type="goodsVO">
+		<result property="goods_num" column="goods_num" />
+		<result property="id" column="id" />
+		<result property="goods_title" column="goods_title" />
+		<result property="goods_content" column="goods_content" />
+		<result property="goods_point" column="goods_point" />
+		<result property="goods_image" column="goods_image" />
+		
+		<result property="goods_status" column="goods_status" />
+		<result property="goods_standardPrice" column="goods_standardPrice" />
+		<result property="goods_deluxePrice" column="goods_deluxePrice" />
+		<result property="goods_premiumPrice" column="goods_premiumPrice" />
+		<result property="goods_credate" column="goods_credate" />
+		<result property="goods_grade" column="goods_grade" />
+		<result property="goods_modify" column="goods_modify" />
+		
+		<result property="goods_fileName" column="fileName" />
+		<result property="goods_main_category" column="goods_main_category" />
+		<result property="goods_middle_category" column="goods_middle_category" />
+		<result property="goods_sub_category" column="goods_sub_category" />
+		<result property="goods_standardContent" column="goods_standardContent" />
+		<result property="goods_deluxeContent" column="goods_deluxeContent" />
+		<result property="goods_premiumContent" column="goods_premiumContent" />
+		<result property="totalSell" column="totalSell" />
+	</resultMap>	
+
+	<resultMap id="imageResult" type="ImageFileVO">
+	   <result property="goods_num" column="goods_num" />
+	   <result property="fileName" column="fileName" />
+	   <result property="reg_id" column="reg_id" />
+	   <result property="image_id" column="image_id" />
+	   <result property="fileType" column="fileType" />
+	</resultMap>
+	
+	<resultMap id="reviewResult" type="reviewVO">
+	   <result property="id" column="id" />
+	   <result property="goods_num" column="goods_num" />
+	   <result property="goods_content" column="goods_content" />
+	   <result property="goods_secret" column="goods_secret" />
+	   <result property="goods_category" column="goods_category" />
+	   <result property="goods_grade" column="goods_grade" />
+	   <result property="creDate" column="creDate" />
+	   <result property="nickname" column="nickname" />
+	</resultMap>
+	
+
+	
+   
+      <select id="selectGoodsList" resultMap="goodsResult">
+  <![CDATA[
+    SELECT g.*, d.fileName
+    FROM goods AS g
+    JOIN goods_image AS d ON g.goods_num = d.goods_num AND d.filetype='main_image'
+    ORDER BY g.totalSell DESC
+    LIMIT 0, 15
+  ]]>
+</select>
+	
+	<select id="selectGoodsDetail" resultMap="goodsResult"   parameterType="String"  >
+	    <![CDATA[
+		     select goods.*, goods_image.fileName from goods , goods_image
+where goods.goods_num=goods_image.goods_num
+and goods_image.filetype='main_image'
+and goods.goods_num=#{goods_num}
+order by goods.goods_num
+    	]]>
+	</select>
+	<select id="selectGoodsDetailImage" resultMap="imageResult"   parameterType="String"  >
+	    <![CDATA[
+		    	select * from  goods_image 
+		    	where  fileType!='main_image'
+				and goods_num=#{goods_num}
+    	]]>
+	</select>
+	
+   <select id="selectGoodsBySearchWord" resultMap="goodsResult"   parameterType="Map"  >
+     <![CDATA[
+	select goods.*, goods_image.fileName from goods, goods_image
+where goods.goods_num=goods_image.goods_num
+and goods_image.filetype='main_image'
+AND (goods.goods_title LIKE CONCAT('%', #{searchWord}, '%') OR #{searchWord} IS NULL)
+AND goods.goods_standardPrice BETWEEN #{priceRange_min} AND #{priceRange_max} 
+AND (goods.goods_prime_yn = #{goods_prime_yn} OR #{goods_prime_yn} IS NULL)
+ORDER BY 
+      CASE #{sortBy}
+        WHEN 'credate' THEN goods.goods_credate
+        WHEN 'grade' THEN goods.goods_grade
+        WHEN 'totalSell' THEN goods.totalSell
+        ELSE goods.goods_credate
+      END DESC
+LIMIT #{offset}, #{pageSize}
+		]]>
+	</select>	
+	
+	<select id="selectKeywordSearch" resultType="String"   parameterType="String"  >
+	    <![CDATA[
+        select goods_title from goods 
+        goods_title like  concat('%',#{keyword},'%')
+        order by goods_credate desc
+		]]>
+	</select>
+	   
+	<select id="getGoodsCountByCategory" resultType="Int" parameterType="Map">
+  <![CDATA[
+    SELECT COUNT(*) 
+    FROM goods 
+    WHERE (goods.goods_main_category = #{goods_main_category} OR #{goods_main_category} IS NULL)
+    AND (goods.goods_middle_category = #{goods_middle_category} OR #{goods_middle_category} IS NULL)
+    AND (goods.goods_sub_category = #{goods_sub_category} OR #{goods_sub_category} IS NULL)
+    AND (goods.goods_title LIKE CONCAT('%', #{searchWord}, '%') OR #{searchWord} IS NULL)
+    AND goods.goods_standardPrice BETWEEN #{priceRange_min} AND #{priceRange_max}
+    AND (goods.goods_prime_yn = #{goods_prime_yn} OR #{goods_prime_yn} IS NULL)
+  ]]>
+</select>
+	
+<select id="selectGoodsListByCategory" resultMap="goodsResult" parameterType="Map">
+  <![CDATA[
+    SELECT goods.*, goods_image.fileName 
+    FROM goods, goods_image 
+    WHERE goods.goods_num = goods_image.goods_num 
+    AND goods_image.filetype = 'main_image' 
+    AND (goods.goods_main_category = #{goods_main_category} OR #{goods_main_category} IS NULL) 
+    AND (goods.goods_middle_category = #{goods_middle_category} OR #{goods_middle_category} IS NULL) 
+    AND (goods.goods_sub_category = #{goods_sub_category} OR #{goods_sub_category} IS NULL) 
+    AND goods.goods_standardPrice BETWEEN #{priceRange_min} AND #{priceRange_max} 
+    AND (goods.goods_prime_yn = #{goods_prime_yn} OR #{goods_prime_yn} IS NULL)
+    ORDER BY 
+      CASE #{sortBy}
+        WHEN 'credate' THEN goods.goods_credate
+        WHEN 'grade' THEN goods.goods_grade
+        WHEN 'totalSell' THEN goods.totalSell
+        ELSE goods.goods_credate
+      END DESC
+    LIMIT #{offset}, #{pageSize}
+  ]]>
+</select>
+
+<insert id="insertReview" parameterType="reviewVO">
+	    <![CDATA[
+		    	insert into goods_cmt(id,
+		    	                           goods_num,
+										   goods_content,
+										   goods_secret,
+										   goods_category,
+										   goods_grade,
+										   creDate,
+										   nickname,
+                                 			status
+
+										   )
+		        				 values(#{id},
+    							        #{goods_num},
+										#{goods_content},
+										#{goods_secret},
+										#{goods_category},
+										#{goods_grade},
+										#{creDate},
+										#{nickname},
+                             			 #{status}
+										
+										)
+    	]]>
+	</insert>
+	
+	<select id="selectReviewList" resultMap="reviewResult">
+  <![CDATA[
+    SELECT *
+    FROM goods_cmt
+    WHERE goods_num = #{goods_num}
+    ORDER BY creDate DESC;
+  ]]>
+</select>
+
+
+
+</mapper> 

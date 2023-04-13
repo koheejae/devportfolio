@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.member">
+<!-- 리절트 맵 정의 -->	
+	<resultMap id="memberResult" type="MemberVO">
+		<result property="id" column="id" />
+		<result property="pwd" column="pwd" />
+		<result property="name" column="name" />
+		<result property="gender" column="gender" />
+		
+		<result property="jumin1" column="jumin1" />
+		<result property="jumin2" column="jumin2" />
+		<result property="tel" column="tel" />
+		<result property="smssts_yn" column="smssts_yn" />
+		<result property="email" column="email" />
+		<result property="emailsts_yn" column="emailsts_yn" />
+		
+		<result property="zipcode" column="zipcode" />
+		<result property="roadAddress" column="roadAdd" />
+		<result property="jibunAddress" column="jibunAdd" />
+		<result property="namujiAddress" column="namujiAdd" />
+		<result property="joinDate" column="joinDate" />
+		
+		<result property="point" column="point" />
+		<result property="status" column="status" />
+		<result property="nickname" column="nickname" />
+		<result property="del_yn" column="del_yn" />
+	</resultMap>	
+	<resultMap id="companyResult" type="CompanyVO">
+		<result property="id" column="id" />
+		<result property="pwd" column="pwd" />
+		<result property="company_name" column="company_name" />
+		<result property="gender" column="gender" />
+		<result property="company_Number" column="company_Number" />
+		<result property="company_phone" column="company_phone" />
+		<result property="company_tel" column="company_tel" />
+		<result property="smssts_yn" column="smssts_yn" />
+		<result property="email" column="email" />
+		<result property="emailsts_yn" column="emailsts_yn" />
+		
+		<result property="company_zipcode" column="company_zipcode" />
+		<result property="company_roadAdd" column="company_roadAdd" />
+		<result property="company_jibunAdd" column="company_jibunAdd" />
+		<result property="company_namujiAdd" column="company_namujiAdd" />
+		<result property="joinDate" column="joinDate" />
+		
+		<result property="company_intro" column="company_intro" />
+		<result property="company_grade" column="company_grade" />
+		<result property="company_totalprice" column="company_totalprice" />
+		<result property="status" column="status" />
+		<result property="nickname" column="nickname" />
+		<result property="capName" column="capName" />
+		<result property="totalWork" column="totalWork" />
+		<result property="del_yn" column="del_yn" />
+		
+	</resultMap>		
+<!--  member 로그인  -->
+	<select id="memberLogin" resultType="memberVO"  parameterType="java.util.Map"  >
+	    <![CDATA[
+			select * from member
+			where id=#{id} and pwd=#{pwd}
+		]]>
+	</select>
+	<!--  company 로그인  -->
+	<select id="companyLogin" resultType="companyVO"  parameterType="java.util.Map"  >
+	    <![CDATA[
+			select * from company
+			where id=#{id} and pwd=#{pwd}
+		]]>
+	</select>
+	   <!-- 해당 쿼리는 입력받은 이름(name)과 전화번호(tel)가 member 테이블의 tel 열과 company 테이블의 
+   company_phone 열에서 동시에 일치하는 레코드의 id값을 반환 해줌.  member 테이블의 tel 을 AS로 변환하여 조회됨.-->
+	<select id="findId" resultType="String" parameterType="Map">
+   <![CDATA[
+      SELECT id FROM (
+         SELECT id, name, tel AS phone FROM member
+         UNION
+         SELECT id, company_name AS name, company_phone AS phone FROM company
+      ) t
+      WHERE name=#{name} AND phone=#{phone}
+   ]]>
+</select>
+	  <!-- 해당 쿼리는 입력받은 아이디(id)와 이메일(email)이 member 테이블의 email 열과
+    company 테이블의 company_email 열에서 동시에 일치하는 레코드의 pwd 값을 반환 해줌. -->
+	 <select id="findPwd" resultType="String" parameterType="Map">
+       <![CDATA[
+      SELECT pwd FROM (
+         SELECT pwd, id, email FROM member
+         UNION
+         SELECT pwd, id ,company_email AS email FROM company
+      ) t
+      WHERE id=#{id} AND email=#{email}
+   ]]>
+   </select>
+	<!--  중복 확인 할때 union 을 활용하여 member 테이블과 company 테이블 둘 다 아이디 중복 조회 -->
+	<select id="selectOverlappedID" parameterType="String" resultType="String">
+	 	select id from member where id=#{id} union select id from company where id=#{id}
+	</select>
+	<!--  member 테이블의 중복 email 조회 해줌  -->
+	<select id="selectOverlappedEmail" parameterType="String" resultType="String">
+	 	select email from member where email=#{email}
+	</select>
+	<select id="selectOverlappedComEmail" parameterType="String" resultType="String">
+	 	select email from company where email=#{email}
+	</select>
+	
+<select id="goodsCompanyInfo" resultType="CompanyVO" parameterType="String">
+  <![CDATA[
+    SELECT *
+    FROM company
+    WHERE id = #{id};
+  ]]>
+</select>
+	
+  <insert id="insertNewMember"  parameterType="memberVO">
+  <![CDATA[
+    	insert into member(id,
+				 		   pwd,
+                           name,
+                           gender,
+                           jumin1,
+                           jumin2,
+                           email,
+                           tel,
+                           smssts_yn,
+                           emailsts_yn,
+                           zipcode,
+                           roadAdd,
+                           jibunAdd,
+                           namujiAdd,
+                           point,
+                           status,
+                           nickname,
+                           joinDate,
+                           del_yn)
+							 values(#{id},
+									#{pwd},
+									#{name},
+                                 	#{gender},
+                                   	#{jumin1},
+                                   	#{jumin2},
+                                    #{email},
+                                    #{tel},
+                                    #{smssts_yn},
+                                    #{emailsts_yn},
+                                    #{zipcode},
+                                    #{roadAdd},
+                                    #{jibunAdd},
+                                    #{namujiAdd},
+                                    #{point},
+                                    #{status},
+                                    #{nickname},
+                                    #{joinDate},
+                                    #{del_yn})
+   ]]>      
+  </insert>
+  
+  <insert id="insertNewCompany"  parameterType="companyVO">
+  <![CDATA[
+    	insert into company(id,
+				 		   pwd,
+				 		   company_Number,
+                           capName,
+                           company_name,
+                           email,
+                           company_phone,
+                           company_tel,
+                           company_grade,
+                           company_totalprice,
+                           status,
+                           joinDate,
+                           smssts_yn,
+                           emailsts_yn,
+                           nickname,
+                           totalWork.
+                           company_intro,
+                           company_zipcode,
+                           company_roadAdd,
+                           company_jibunAdd,
+                           company_namujiAdd)
+							 values(#{id},
+									#{pwd},
+									#{company_Number},
+                                 	#{capName},
+                                   	#{company_name},
+                                   	#{email},
+                                    #{company_phone},
+                                    #{company_tel},
+                                    #{company_grade},
+                                    #{company_totalprice},
+                                    #{status},
+                                    #{joinDate},
+                                    #{smssts_yn},
+                                    #{emailsts_yn},
+                                    #{nickname},
+                                    #{totalWork},
+                                    #{company_intro},
+                                    #{company_zipcode},
+                                    #{company_roadAdd},
+                                    #{company_jibunAdd},
+                                    #{company_namujiAdd})
+   ]]>      
+  </insert>
+</mapper>

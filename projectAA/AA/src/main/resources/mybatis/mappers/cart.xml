@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.cart">
+	<!-- 리절트 맵 정의 -->
+	<resultMap id="cartResult" type="CartVO">
+		<result property="cart_num" column="cart_num" />
+		<result property="goods_num" column="goods_num" />
+		<result property="id" column="id" />
+		<result property="goods_option" column="goods_option" />
+		<result property="cart_goods_qty" column="cart_goods_qty" />
+		<result property="creDate" column="creDate" />
+	</resultMap>
+	
+	<resultMap id="goodsResult" type="GoodsVO">
+		<result property="goods_num" column="goods_num" />
+		<result property="id" column="id" />
+		<result property="goods_title" column="goods_title" />
+		<result property="goods_content" column="goods_content" />
+		<result property="goods_point" column="goods_point" />
+		<result property="goods_image" column="goods_image" />
+		<result property="goods_status" column="goods_status" />
+
+		<result property="goods_standardPrice" column="goods_standardPrice" />
+		<result property="goods_deluxePrice" column="goods_deluxePrice" />
+		<result property="goods_premiumPrice" column="goods_premiumPrice" />
+		<result property="goods_credate" column="goods_credate" />
+		<result property="goods_grade" column="goods_grade" />
+		<result property="goods_modify" column="goods_modify" />
+		<result property="goods_fileName" column="fileName" />
+
+		<result property="goods_main_category" column="goods_main_category" />
+		<result property="goods_middle_category" column="goods_middle_category" />
+		<result property="goods_sub_category" column="goods_sub_category" />
+		<result property="goods_standardContent" column="goods_standardContent" />
+		<result property="goods_deluxeContent" column="goods_deluxeContent" />
+		<result property="goods_premiumContent" column="goods_premiumContent" />
+		<result property="totalSell" column="totalSell" />
+		<result property="goods_prime_yn" column="goods_prime_yn" />
+		
+	</resultMap>
+	
+	<resultMap id="imageResult" type="ImageFileVO">
+	   <result property="goods_num" column="goods_num" />
+	   <result property="fileName" column="fileName" />
+	   <result property="reg_id" column="reg_id" />
+	   <result property="image_id" column="image_id" />
+	   <result property="fileType" column="fileType" />
+	</resultMap>
+	
+
+	<select id="selectCartList"  parameterType="cartVO"  resultMap="cartResult"   >
+	    <![CDATA[
+		select cart_num, goods_num, id, cart_goods_qty, goods_option, creDate 
+		from goods_cart
+		where id=#{id}
+		order by goods_num
+		]]>
+	</select>
+
+	<select id="selectGoodsList" resultMap="goodsResult" parameterType="java.util.Map">
+    <![CDATA[
+        select DISTINCT g.cart_num,g.goods_option,g.cart_goods_qty,p.*,d.fileName from goods_cart g, goods_image d, goods p
+        where g.goods_num=d.goods_num AND g.goods_num=p.goods_num
+        and d.fileType='main_image'
+        and g.goods_num in
+    ]]>
+    <foreach item="item" collection="list" open="(" separator="," close=")">
+        #{item.goods_num} 
+    </foreach>
+    and g.cart_num in
+    <foreach item="item" collection="list" open="(" separator="," close=")">
+        #{item.cart_num} 
+    </foreach>
+    order by goods_num
+</select>
+
+
+	<select id="selectCountInCart" resultType="String" parameterType="cartVO">
+	    <![CDATA[
+		     select case count(*) when 0 then 'false' else 'true' end from goods_cart
+			where goods_num=#{goods_num}
+			  and id=#{id} 
+
+    	]]>
+	</select>
+
+	<insert id="insertGoodsInCart" parameterType="cartVO">
+	    <![CDATA[
+		    	insert into goods_cart(cart_num,
+		    	                           id,
+		    	                           goods_num,
+										   goods_option,
+										   cart_goods_qty,
+										   creDate
+										   )
+		        				 values(#{cart_num},
+    							        #{id},
+    							        #{goods_num},
+										#{goods_option},
+										#{cart_goods_qty},
+										#{creDate}
+										)
+    	]]>
+	</insert>
+
+	<update id="updateCartGoodsQty" parameterType="cartVO">
+	    <![CDATA[
+			update goods_cart
+			       set cart_goods_qty=#{cart_goods_qty}, goods_option=#{goods_option}
+		 	       where id=#{id}
+			        and goods_num=#{goods_num}
+    	]]>
+	</update>
+	<delete id="deleteCartGoods" parameterType="int">
+	    <![CDATA[
+	      delete from goods_cart
+	      where cart_num=#{cart_num}
+    	]]>
+	</delete>
+	
+	<select id="selectMaxCartNum" resultType="int">
+	    <![CDATA[
+			select ifnull(max(cart_num), 0)+1 from goods_cart
+    	]]>
+	</select>
+
+</mapper>
